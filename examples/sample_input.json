@@ -1,0 +1,9 @@
+{
+  "is_critical_information_infrastructure": false,
+  "important_data_involved": false,
+  "personal_info_count_annual": 300000,
+  "sensitive_personal_info_count": 2000,
+  "data_processor_type": "一般处理者",
+  "scenario": "跨国集团内共享",
+  "exemption_applicable": false
+}
