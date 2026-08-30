@@ -1,0 +1,70 @@
+{
+  "rules_version": "1.0.0",
+  "rules_updated_date": "2026-08-30",
+  "generated_at": "2026-08-30 19:31:54",
+  "input": {
+    "is_critical_information_infrastructure": false,
+    "important_data_involved": false,
+    "personal_info_count_annual": 300000,
+    "sensitive_personal_info_count": 2000,
+    "data_processor_type": "一般处理者",
+    "scenario": "跨国集团内共享",
+    "exemption_applicable": false
+  },
+  "applicable_path": "scc_or_certification",
+  "path_name": "标准合同备案 / 个人信息保护认证",
+  "authority": "标准合同：向所在地省级网信部门备案；认证：经专业机构认证",
+  "time_limit": "标准合同应在生效之日起10个工作日内向省级网信部门备案。",
+  "material_list": [
+    "个人信息出境标准合同(按官方范本订立并签署)",
+    "个人信息保护影响评估报告(PIA/DPIA)",
+    "标准合同备案表",
+    "营业执照及经办人身份证明",
+    "(认证路径)通过专业机构个人信息保护认证的证明材料"
+  ],
+  "decision_trace": [
+    {
+      "node_id": "N1_CIIO",
+      "description": "是否为关键信息基础设施运营者(CIIO)",
+      "evaluated": "is_critical_information_infrastructure=False (期望 True)",
+      "matched": false,
+      "reason": ""
+    },
+    {
+      "node_id": "N2_IMPORTANT_DATA",
+      "description": "是否涉及重要数据出境",
+      "evaluated": "important_data_involved=False (期望 True)",
+      "matched": false,
+      "reason": ""
+    },
+    {
+      "node_id": "N3_PI_COUNT",
+      "description": "自当年1月1日起累计向境外提供个人信息(不含敏感)是否达 100万人",
+      "evaluated": "personal_info_count_annual=300000 >= 阈值1000000",
+      "matched": false,
+      "reason": ""
+    },
+    {
+      "node_id": "N4_SPI_COUNT",
+      "description": "自当年1月1日起累计向境外提供敏感个人信息是否达 1万人",
+      "evaluated": "sensitive_personal_info_count=2000 >= 阈值10000",
+      "matched": false,
+      "reason": ""
+    },
+    {
+      "node_id": "N5_EXEMPTION",
+      "description": "是否符合豁免情形(如为订立/履行个人为一方当事人的合同必需、跨境HR管理必需、非CIIO且当年累计出境个人信息不满10万人等)",
+      "evaluated": "exemption_applicable=False (期望 True)",
+      "matched": false,
+      "reason": ""
+    },
+    {
+      "node_id": "N6_SCC_OR_CERT",
+      "description": "未达安全评估阈值且不豁免：适用标准合同备案或个人信息保护认证",
+      "evaluated": "reached_fallback",
+      "matched": true,
+      "reason": "未触发安全评估阈值，累计出境个人信息处于10万至100万人区间，可选择订立个人信息出境标准合同并备案，或通过个人信息保护认证。"
+    }
+  ],
+  "disclaimer": "本报告为自检辅助，不构成法律意见，最终以监管口径为准。"
+}
