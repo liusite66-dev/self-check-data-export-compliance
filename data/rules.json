@@ -1,0 +1,96 @@
+{
+  "version": "2.0.0",
+  "updated_date": "2026-08-30",
+  "source_note": "阈值与判定口径依据《网络安全法》《数据安全法》《个人信息保护法》《数据出境安全评估办法》(2022)、《个人信息出境标准合同办法》(2023)、《促进和规范数据跨境流动规定》(2024)整理。数值为现行示例口径，实务中须按最新法规、主管部门通知及自贸区负面清单核对。",
+  "disclaimer": "本规则为自检辅助，不构成法律意见，最终以监管口径为准。",
+  "thresholds": {
+    "personal_info_security_assessment": 1000000,
+    "sensitive_personal_info_security_assessment": 10000,
+    "scc_or_certification_pi_lower": 100000,
+    "scc_or_certification_pi_upper": 1000000,
+    "exemption_pi_upper": 100000,
+    "sensitive_personal_info_scc_upper": 10000
+  },
+  "threshold_notes": {
+    "personal_info_security_assessment": "非CIIO自当年1月1日起累计向境外提供个人信息(不含敏感)达100万人，须申报安全评估。",
+    "sensitive_personal_info_security_assessment": "自当年1月1日起累计向境外提供敏感个人信息达1万人，须申报安全评估。",
+    "scc_or_certification_pi_lower": "累计向境外提供个人信息达10万人(不含敏感)，是订立标准合同/通过认证的下限门槛。",
+    "scc_or_certification_pi_upper": "累计向境外提供个人信息不满100万人(不含敏感)，可选择标准合同或认证路径。",
+    "exemption_pi_upper": "非CIIO且自当年1月1日起累计向境外提供个人信息不满10万人(不含敏感)，可免于申报安全评估、订立标准合同或通过认证。",
+    "sensitive_personal_info_scc_upper": "累计向境外提供敏感个人信息不满1万人，可选择标准合同或认证路径。"
+  },
+  "exemption_scenarios": {
+    "contract_necessary": "为订立、履行个人作为一方当事人的合同(如跨境购物、汇款、机票酒店预订、签证办理等)所必需向境外提供个人信息。",
+    "cross_border_hr": "按照依法制定的劳动规章制度和依法签订的集体合同，为实施跨境人力资源管理所必需向境外提供员工个人信息。",
+    "emergency": "紧急情况下为保护自然人的生命健康和财产安全所必需向境外提供个人信息。",
+    "free_trade_zone_negative_list": "自由贸易试验区内数据处理者向境外提供未纳入数据出境负面清单的数据，可免于申报安全评估、订立标准合同或通过认证。",
+    "non_pi_non_important": "向境外提供的数据不包含个人信息或重要数据(如国际贸易、跨境运输、学术合作、跨国生产制造和市场营销活动中收集产生的数据)。",
+    "below_100k": "非CIIO且自当年1月1日起累计向境外提供个人信息不满10万人(不含敏感个人信息)。"
+  },
+  "decision_tree": [
+    {
+      "node_id": "N1_CIIO",
+      "description": "是否为关键信息基础设施运营者(CIIO)且向境外提供个人信息或重要数据",
+      "condition_field": "is_critical_information_infrastructure",
+      "match_value": true,
+      "on_match": {"path": "security_assessment", "reason": "CIIO 向境外提供个人信息或重要数据，无论数量一律须申报数据出境安全评估(《数据出境安全评估办法》第4条)。"}
+    },
+    {
+      "node_id": "N2_IMPORTANT_DATA",
+      "description": "是否涉及重要数据出境",
+      "condition_field": "important_data_involved",
+      "match_value": true,
+      "on_match": {"path": "security_assessment", "reason": "向境外提供重要数据，须申报数据出境安全评估(《数据出境安全评估办法》第4条)。"}
+    },
+    {
+      "node_id": "N3_PI_COUNT",
+      "description": "自当年1月1日起累计向境外提供个人信息(不含敏感)是否达 100万人",
+      "condition_field": "personal_info_count_annual",
+      "operator": ">=",
+      "threshold_key": "personal_info_security_assessment",
+      "on_match": {"path": "security_assessment", "reason": "非CIIO自当年1月1日起累计向境外提供个人信息达100万人，须申报数据出境安全评估。"}
+    },
+    {
+      "node_id": "N4_SPI_COUNT",
+      "description": "自当年1月1日起累计向境外提供敏感个人信息是否达 1万人",
+      "condition_field": "sensitive_personal_info_count",
+      "operator": ">=",
+      "threshold_key": "sensitive_personal_info_security_assessment",
+      "on_match": {"path": "security_assessment", "reason": "自当年1月1日起累计向境外提供敏感个人信息达1万人，须申报数据出境安全评估。"}
+    },
+    {
+      "node_id": "N5_EXEMPTION",
+      "description": "是否符合豁免情形(合同必需/跨境HR管理必需/紧急情况保护生命健康/自贸区负面清单外/不含个人信息与重要数据/非CIIO当年累计出境个人信息不满10万人等)",
+      "condition_field": "exemption_applicable",
+      "match_value": true,
+      "on_match": {"path": "exemption", "reason": "符合《促进和规范数据跨境流动规定》等规定的豁免情形，可免于申报数据出境安全评估、订立标准合同或通过个人信息保护认证。"}
+    },
+    {
+      "node_id": "N5B_NO_PI_NO_IMPORTANT",
+      "description": "出境数据是否既不含个人信息也不含重要数据",
+      "condition_field": "no_personal_or_important_data",
+      "match_value": true,
+      "on_match": {"path": "exemption", "reason": "出境数据不包含个人信息和重要数据(如国际贸易、跨境运输、学术合作、生产制造与市场营销活动产生的数据)，不适用数据出境三条路径，可自由流动。"}
+    },
+    {
+      "node_id": "N5C_FTZ_NEGATIVE_LIST",
+      "description": "是否为自贸区内且出境数据未纳入数据出境负面清单",
+      "condition_field": "free_trade_zone_negative_list_exempt",
+      "match_value": true,
+      "on_match": {"path": "exemption", "reason": "自由贸易试验区内数据处理者向境外提供未纳入负面清单的数据，可免于申报安全评估、订立标准合同或通过认证。"}
+    },
+    {
+      "node_id": "N5D_BELOW_100K",
+      "description": "非CIIO且自当年1月1日起累计向境外提供个人信息(不含敏感)是否不满 10万人",
+      "condition_field": "personal_info_below_100k",
+      "match_value": true,
+      "on_match": {"path": "exemption", "reason": "非CIIO且自当年1月1日起累计向境外提供个人信息不满10万人(不含敏感)，免于申报安全评估、订立标准合同或通过认证。"}
+    },
+    {
+      "node_id": "N6_SCC_OR_CERT",
+      "description": "未达安全评估阈值且不符合豁免：适用个人信息出境标准合同备案或个人信息保护认证",
+      "condition_field": null,
+      "on_match": {"path": "scc_or_certification", "reason": "未触发安全评估阈值(累计出境个人信息10万至100万人、或敏感个人信息不满1万人)且不符合豁免情形，可订立个人信息出境标准合同并向省级网信部门备案，或通过专业机构个人信息保护认证。"}
+    }
+  ]
+}
